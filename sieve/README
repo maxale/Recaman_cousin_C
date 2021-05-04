@@ -1,0 +1,70 @@
+1) how to compile sieve.c
+
+   You need the accompanying longlong.h file in the same directory.
+
+   First try to compile with OpenMP (this will produce parallel thus faster
+   code):
+Try
+   gcc -O3 -g -W -Wall sieve.c -lm -lgmp -fopenmp -o sieve
+or
+   clang -O3 -g -W -Wall sieve.c -lm -lgmp -fopenmp=libiomp5 -o sieve
+
+   If you don't have OpenMP:
+Try
+   gcc -DNO_OPENMP -O3 -g -W -Wall sieve.c -lm -lgmp -o sieve
+
+2) how to run the program
+
+   ./sieve n kmax
+   where we want to search for C(n) in the range
+   10^d <= n+C(n) < kmax+1, where d is the number of digits of kmax.
+
+   With OpenMP you can control the number of threads used by the program
+   with the environment variable OMP_NUM_THREADS:
+   export OMP_NUM_THREADS=3
+   ./sieve n kmax
+
+   Options:
+   -fast      sieve prime powers up to sqrt(n+kmax+1) only
+                (might miss some solutions)
+   -bound B   sieve prime powers up to B
+   -n0 N      start at n0 instead of 10^l (requires 10^l <= N <= kmax)
+
+   Examples (on a 4-thread computer):
+   $ time ./sieve 98 259110738
+   DLP_THRESHOLD=16
+   Using 4 thread(s)
+   Using bound=259110740
+   Sieve n=98 100000000-259110739...
+   thread 3 is done, last prime 259103599
+   thread 1 is done, last prime 259106143
+   thread 0 is done, last prime 259108193
+   thread 2 is done, last prime 259110721
+   Scan sieve array...
+   ###### 259110640: 250
+   Found 1 solution(s)
+
+   real	0m22.352s
+   user	1m29.164s
+   sys	0m0.033s
+
+   $ time ./sieve -fast 98 259110738
+   DLP_THRESHOLD=16
+   Using 4 thread(s)
+   Using bound=16096
+   Sieve n=98 100000000-259110739...
+   thread 1 is done, last prime 12911
+   thread 2 is done, last prime 14149
+   thread 0 is done, last prime 16091
+   thread 3 is done, last prime 15349
+   Scan sieve array...
+   ###### 259110640: 250
+   Found 1 solution(s)
+
+   real	0m0.028s
+   user	0m0.080s
+   sys	0m0.021s
+
+3) in case of trouble
+
+   Please contact the author <paul.zimmermann@inria.fr>
